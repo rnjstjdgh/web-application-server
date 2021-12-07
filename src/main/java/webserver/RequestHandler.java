@@ -3,7 +3,10 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.util.Map;
 
+import db.DataBase;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.HttpRequestUtils;
@@ -22,7 +25,7 @@ public class RequestHandler extends Thread {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
+            showRequest(in);
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
             DataOutputStream dos = new DataOutputStream(out);
 
@@ -31,12 +34,38 @@ public class RequestHandler extends Thread {
                 response400(dos);
                 return;
             }
-            String reqPath = HttpRequestUtils.getReqPath(startLine);
-            byte[] body = Files.readAllBytes(new File("./webapp" + reqPath).toPath());
-            response200(dos, body);
+            String reqUrl = HttpRequestUtils.getReqUrl(startLine);
+            String viewPath = null;
+            int querySplitIdx = reqUrl.indexOf("?");
+            if(querySplitIdx == -1){
+                viewPath = reqUrl;
+            }else{
+                String reqPath = HttpRequestUtils.getReqPath(reqUrl,querySplitIdx);
+                String queryString = HttpRequestUtils.getReqQueryString(reqUrl,querySplitIdx);
+                Map<String, String> queryMap = HttpRequestUtils.parseQueryString(queryString);
+
+                if(reqPath.equals("/user/create")){ //회원가입 요청
+                    User newUser = User.builder()
+                            .userId(queryMap.get("userId"))
+                            .password(queryMap.get("password"))
+                            .name(queryMap.get("name"))
+                            .email(queryMap.get("email")).build();
+                    DataBase.addUser(newUser);
+                }
+                viewPath = reqPath;
+            }
+
+            responseView(dos,viewPath);
         } catch (IOException e) {
             log.error(e.getMessage());
         }
+    }
+
+    private void responseView(DataOutputStream dos, String viewPath) throws IOException {
+        if(viewPath.equals("/"))
+            viewPath = "/index.html";
+        byte[] body = Files.readAllBytes(new File("./webapp" + viewPath).toPath());
+        response200(dos, body);
     }
 
     private void response200(DataOutputStream dos, byte[] body){

@@ -18,9 +18,17 @@ import webserver.WebServer;
 public class HttpRequestUtils {
     private static final Logger log = LoggerFactory.getLogger(HttpRequestUtils.class);
 
-    public static String getReqPath(String startLine){
+    public static String getReqUrl(String startLine){
         String[] token = startLine.split(" ");
         return token[1];
+    }
+
+    public static String getReqPath(String reqUrl, int idx){
+        return reqUrl.substring(0,idx);
+    }
+
+    public static String getReqQueryString(String reqUrl, int idx){
+        return reqUrl.substring(idx + 1);
     }
 
     /**
