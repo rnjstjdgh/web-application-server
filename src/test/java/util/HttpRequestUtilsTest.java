@@ -1,6 +1,7 @@
 package util;
 
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 import java.util.Map;
@@ -69,5 +70,12 @@ public class HttpRequestUtilsTest {
         String header = "Content-Length: 59";
         Pair pair = HttpRequestUtils.parseHeader(header);
         assertThat(pair, is(new Pair("Content-Length", "59")));
+    }
+
+    @Test
+    public void getReqUrl(){
+        String startLine = "GET /index.html HTTP/1.1";
+        String path = HttpRequestUtils.getReqPath(startLine);
+        assertThat(path, is("/index.html"));
     }
 }
