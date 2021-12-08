@@ -24,7 +24,7 @@ public class HttpRequestUtilsTest {
                 "User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\n" +
                 "Host: www.tutorialspoint.com\n" +
                 "Content-Type: application/x-www-form-urlencoded\n" +
-                "Content-Length: length\n" +
+                "Content-Length: 49\n" +
                 "Accept-Language: en-us\n" +
                 "Accept-Encoding: gzip, deflate\n" +
                 "Connection: Keep-Alive\n" +
@@ -35,13 +35,13 @@ public class HttpRequestUtilsTest {
                 "User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\n" +
                 "Host: www.tutorialspoint.com\n" +
                 "Content-Type: text/xml; charset=utf-8\n" +
-                "Content-Length: length\n" +
+                "Content-Length: 23\n" +
                 "Accept-Language: en-us\n" +
                 "Accept-Encoding: gzip, deflate\n" +
                 "Connection: Keep-Alive\n" +
                 "\n" +
-                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<string xmlns=\"http://clearforest.com/\">string</string>";
+                "dsssdsds\n" +
+                "dsssdsdsfsdfsd";
 
         String reqMsgSample3 = "GET /hello.htm HTTP/1.1\n" +
                 "User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\n" +
@@ -58,11 +58,10 @@ public class HttpRequestUtilsTest {
         Map<String, String> headerMap = objectMapper.convertValue(headerMapObj, Map.class);
         assertThat("www.tutorialspoint.com",is(headerMap.get("Host")));
         assertThat("application/x-www-form-urlencoded",is(headerMap.get("Content-Type")));
-        assertThat("licenseID=string&content=string&/paramsXML=string\n",is(resultMap1.get(HttpRequestUtils.BODY).toString()));
+        assertThat("licenseID=string&content=string&/paramsXML=string",is(resultMap1.get(HttpRequestUtils.BODY).toString()));
 
         Map<String, Object> resultMap2 = HttpRequestUtils.parseRequest(new ByteArrayInputStream(reqMsgSample2.getBytes()));
-        assertThat("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<string xmlns=\"http://clearforest.com/\">string</string>\n",is(resultMap2.get(HttpRequestUtils.BODY).toString()));
+        assertThat("dsssdsds\n" + "dsssdsdsfsdfsd",is(resultMap2.get(HttpRequestUtils.BODY).toString()));
 
         Map<String, Object> resultMap3 = HttpRequestUtils.parseRequest(new ByteArrayInputStream(reqMsgSample3.getBytes()));
         assertThat(null,is(resultMap3.get(HttpRequestUtils.BODY)));

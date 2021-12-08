@@ -9,51 +9,74 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HttpResponseUtils {
     private static final Logger log = LoggerFactory.getLogger(HttpResponseUtils.class);
+    private static final String methodAndVersion = "HTTP/1.1";
 
-    public static void response200View(OutputStream out, String viewPath) throws IOException {
-        DataOutputStream dos = new DataOutputStream(out);
-        if(viewPath.equals("/"))
-            viewPath = "/index.html";
+    public static void setRedirectResponse(DataOutputStream dos,
+                                           Map<String, String> headerMap,
+                                           String redirectLocation ){
+
+        headerMap.put("Location", redirectLocation);
+        setResponseStartLineAndHeader(dos,Status.Found,headerMap);
+    }
+
+    public static void setViewResponse(DataOutputStream dos,
+                                       Status status, Map<String, String> headerMap,
+                                       String viewPath) throws IOException {
         byte[] body = Files.readAllBytes(new File("./webapp" + viewPath).toPath());
-        response200(dos, body);
+        headerMap.put("Content-Type", "text/html;charset=utf-8");
+        headerMap.put("Content-Length", Integer.toString(body.length));
+
+        setResponseStartLineAndHeader(dos,status, headerMap);
+        setResponseBody(dos,body);
     }
 
-    public static void response400(DataOutputStream dos, byte[] body){
-        response400Header(dos, body.length);
-        responseBody(dos, body);
+    public static void setTextResponse(DataOutputStream dos,
+                                       Status status, Map<String, String> headerMap,
+                                       String bodyText){
+        byte[] body = bodyText.getBytes();
+        headerMap.put("Content-Type", "text/html;charset=utf-8");
+        headerMap.put("Content-Length", Integer.toString(body.length));
+        setResponseStartLineAndHeader(dos,status, headerMap);
+        setResponseBody(dos,body);
     }
 
-    public static void response200(DataOutputStream dos, byte[] body){
-        response200Header(dos, body.length);
-        responseBody(dos, body);
+    public static void setResponseStartLineAndHeader(DataOutputStream dos,
+                                   Status status, Map<String, String> headerMap){
+        setResponseStartLine(dos,status);
+        setResponseHeader(dos,headerMap);
     }
 
-    public static void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    public static void setResponseStartLine(DataOutputStream dos, Status status){
+        String startLine = methodAndVersion + " " + status.getCode() + " " + status.getName();
+        setResponseStartLine(dos,startLine);
+    }
+
+    public static void setResponseStartLine(DataOutputStream dos, String startLine){
         try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
+            dos.writeBytes(startLine + " \r\n");
         } catch (IOException e) {
-            log.error("{}",e);
+            log.error(e.getMessage());
         }
     }
 
-    public static void response400Header(DataOutputStream dos, int lengthOfBodyContent) {
+    public static void setResponseHeader(DataOutputStream dos, Map<String, String> map){
         try {
-            dos.writeBytes("HTTP/1.1 400 Bad Request \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+            for(String key: map.keySet()){
+                String value = map.get(key);
+                dos.writeBytes(key +": " + value + "\r\n");
+            }
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             log.error(e.getMessage());
         }
     }
 
-    public static void responseBody(DataOutputStream dos, byte[] body) {
+    public static void setResponseBody(DataOutputStream dos, byte[] body) {
         try {
             dos.write(body, 0, body.length);
             dos.flush();

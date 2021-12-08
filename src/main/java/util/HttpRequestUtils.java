@@ -63,16 +63,16 @@ public class HttpRequestUtils {
         }
         resultMap.put(HEADERMAP,headerMap);
 
-        StringBuffer msgBody = null;
-        if(headerMap.get("Content-Type") != null){    //body가 있다는 의미
-            msgBody = new StringBuffer("");
-            while(true){
-                line = bufferedReader.readLine();
-                if("".equals(line) || line == null )
-                    break;
-                log.info(line.toString());
-                msgBody.append(line + "\n");
+        String msgBody = null;
+        if(headerMap.get("Content-Length") != null){    //body가 있다는 의미
+            StringBuffer buffer = new StringBuffer();
+            int bodyLen = Integer.parseInt(headerMap.get("Content-Length").toString());
+            while(buffer.length() < bodyLen) {
+                char chBuf[] = new char[1024];
+                bufferedReader.read(chBuf);
+                buffer.append(chBuf);
             }
+            msgBody = buffer.toString().substring(0,bodyLen);
         }
         resultMap.put(BODY,msgBody);
         return resultMap;
