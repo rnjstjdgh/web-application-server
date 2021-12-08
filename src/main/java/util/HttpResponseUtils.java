@@ -38,7 +38,7 @@ public class HttpResponseUtils {
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error("{}",e);
         }
     }
 

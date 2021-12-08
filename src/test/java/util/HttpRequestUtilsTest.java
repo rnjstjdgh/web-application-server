@@ -4,13 +4,70 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
 import util.HttpRequestUtils.Pair;
 
 public class HttpRequestUtilsTest {
+
+    ObjectMapper objectMapper = new ObjectMapper();
+
+
+    @Test
+    public void parseRequestTest() throws IOException {
+        String reqMsgSample1 = "POST /cgi-bin/process.cgi HTTP/1.1\n" +
+                "User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\n" +
+                "Host: www.tutorialspoint.com\n" +
+                "Content-Type: application/x-www-form-urlencoded\n" +
+                "Content-Length: length\n" +
+                "Accept-Language: en-us\n" +
+                "Accept-Encoding: gzip, deflate\n" +
+                "Connection: Keep-Alive\n" +
+                "\n" +
+                "licenseID=string&content=string&/paramsXML=string";
+
+        String reqMsgSample2 = "POST /cgi-bin/process.cgi HTTP/1.1\n" +
+                "User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\n" +
+                "Host: www.tutorialspoint.com\n" +
+                "Content-Type: text/xml; charset=utf-8\n" +
+                "Content-Length: length\n" +
+                "Accept-Language: en-us\n" +
+                "Accept-Encoding: gzip, deflate\n" +
+                "Connection: Keep-Alive\n" +
+                "\n" +
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<string xmlns=\"http://clearforest.com/\">string</string>";
+
+        String reqMsgSample3 = "GET /hello.htm HTTP/1.1\n" +
+                "User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\n" +
+                "Host: www.tutorialspoint.com\n" +
+                "Accept-Language: en-us\n" +
+                "Accept-Encoding: gzip, deflate\n" +
+                "Connection: Keep-Alive";
+
+        Map<String, Object> resultMap1 = HttpRequestUtils.parseRequest(new ByteArrayInputStream(reqMsgSample1.getBytes()));
+        assertThat("/cgi-bin/process.cgi",is(resultMap1.get(HttpRequestUtils.PATH)));
+        assertThat("POST",is(resultMap1.get(HttpRequestUtils.METHOD)));
+        assertThat(null,is(resultMap1.get(HttpRequestUtils.QUERYSTRINGMAP)));
+        Object headerMapObj = resultMap1.get(HttpRequestUtils.HEADERMAP);
+        Map<String, String> headerMap = objectMapper.convertValue(headerMapObj, Map.class);
+        assertThat("www.tutorialspoint.com",is(headerMap.get("Host")));
+        assertThat("application/x-www-form-urlencoded",is(headerMap.get("Content-Type")));
+        assertThat("licenseID=string&content=string&/paramsXML=string\n",is(resultMap1.get(HttpRequestUtils.BODY).toString()));
+
+        Map<String, Object> resultMap2 = HttpRequestUtils.parseRequest(new ByteArrayInputStream(reqMsgSample2.getBytes()));
+        assertThat("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<string xmlns=\"http://clearforest.com/\">string</string>\n",is(resultMap2.get(HttpRequestUtils.BODY).toString()));
+
+        Map<String, Object> resultMap3 = HttpRequestUtils.parseRequest(new ByteArrayInputStream(reqMsgSample3.getBytes()));
+        assertThat(null,is(resultMap3.get(HttpRequestUtils.BODY)));
+    }
+
     @Test
     public void parseQueryString() {
         String queryString = "userId=javajigi";

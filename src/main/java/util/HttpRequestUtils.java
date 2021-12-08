@@ -18,6 +18,12 @@ import webserver.WebServer;
 
 public class HttpRequestUtils {
     private static final Logger log = LoggerFactory.getLogger(HttpRequestUtils.class);
+    public static final String METHOD = "method";
+    public static final String PATH = "path";
+    public static final String VERSION = "httpVersion";
+    public static final String QUERYSTRINGMAP = "queryStringMap";
+    public static final String HEADERMAP = "headerMap";
+    public static final String BODY = "body";
 
     /***
      * InputStream으로 들어온 요청 정보 파싱
@@ -33,16 +39,16 @@ public class HttpRequestUtils {
         if("".equals(startLine) || startLine == null )
             return resultMap;
 
-        resultMap.put("method", getMethod(startLine));
-        resultMap.put("httpVersion", getHTTPVersion(startLine));
+        resultMap.put(METHOD, getMethod(startLine));
+        resultMap.put(VERSION, getHTTPVersion(startLine));
         String reqUrl = getReqUrl(startLine);
         int querySplitIdx = reqUrl.indexOf("?");
         if(querySplitIdx == -1)
-            resultMap.put("path", reqUrl);
+            resultMap.put(PATH, reqUrl);
         else{
-            resultMap.put("path",getReqPath(reqUrl,querySplitIdx));
+            resultMap.put(PATH,getReqPath(reqUrl,querySplitIdx));
             String queryString = getReqQueryString(reqUrl,querySplitIdx);
-            resultMap.put("queryStringMap",parseQueryString(queryString));
+            resultMap.put(QUERYSTRINGMAP,parseQueryString(queryString));
         }
 
         String line = null;
@@ -55,7 +61,20 @@ public class HttpRequestUtils {
             Pair pair = parseHeader(line);
             headerMap.put(pair.key,pair.value);
         }
-        resultMap.put("headerMap",headerMap);
+        resultMap.put(HEADERMAP,headerMap);
+
+        StringBuffer msgBody = null;
+        if(headerMap.get("Content-Type") != null){    //body가 있다는 의미
+            msgBody = new StringBuffer("");
+            while(true){
+                line = bufferedReader.readLine();
+                if("".equals(line) || line == null )
+                    break;
+                log.info(line.toString());
+                msgBody.append(line + "\n");
+            }
+        }
+        resultMap.put(BODY,msgBody);
         return resultMap;
     }
 

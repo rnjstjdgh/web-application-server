@@ -39,6 +39,11 @@
         1.  Request-Line => Method / Request-URL / HTTP-Version
         2.  request-header => key-value값 형식
         3.  message Body
+    * http 요청 메시지를 직접 파싱하려고 하니 socket io에서 주의해야 할 점과 http 요청 메시지 스펙을 더 공부할 수 있는 기회가 되었다.
+        * socket io에서 주의해야 할 점
+            * (너무 당연한 말이지만)data를 쓰는 쪽과 읽는 쪽의 프로토콜에 맞게 움직이는게 중요
+            * 구현 중, 웹 클라이언트는 이제 그만 보내는데 서버에서 다음 바이트가 도착하기를 기다리는 코드를 작성했었음
+            * 위와 같은 코드는 서버가 block되는 결과를 만들었음
 
 ### 요구사항 3 - post 방식으로 회원가입
 * 
