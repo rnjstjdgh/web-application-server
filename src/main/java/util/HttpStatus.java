@@ -1,6 +1,6 @@
 package util;
 
-public enum Status {
+public enum HttpStatus {
     OK(200,"OK"),
     Found(302, "Found"),
     BadRequest(400, "Bad Request");
@@ -8,11 +8,11 @@ public enum Status {
     private int code;
     private String name;
 
-    private Status(){
+    private HttpStatus(){
 
     }
 
-    private Status(int code, String name){
+    private HttpStatus(int code, String name){
         this.code = code;
         this.name = name;
     }
