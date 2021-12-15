@@ -31,13 +31,15 @@ public class HttpRequestUtils {
      * @return
      * @throws IOException
      */
-    public static Map<String, Object> parseRequest(InputStream in) throws IOException {
+    public static void parseRequest(InputStream in) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
         Map<String, Object> resultMap = new HashMap<>();
 
         String startLine = bufferedReader.readLine();
-        if("".equals(startLine) || startLine == null )
-            return resultMap;
+        if("".equals(startLine) || startLine == null ){
+            Context.reqMap.set(resultMap);
+            return ;
+        }
 
         resultMap.put(METHOD, getMethod(startLine));
         resultMap.put(VERSION, getHTTPVersion(startLine));
@@ -75,7 +77,7 @@ public class HttpRequestUtils {
             msgBody = buffer.toString().substring(0,bodyLen);
         }
         resultMap.put(BODY,msgBody);
-        return resultMap;
+        Context.reqMap.set(resultMap);
     }
 
     public static String getMethod(String startLine){

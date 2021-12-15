@@ -12,6 +12,7 @@ import db.DataBase;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.Context;
 import util.HttpRequestUtils;
 import util.HttpResponseUtils;
 import util.HttpStatus;
@@ -32,8 +33,8 @@ public class RequestHandler extends Thread {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             
             //요청 정보 파싱
-            DataOutputStream dos = new DataOutputStream(out);
-            Map<String, Object> requestMap = HttpRequestUtils.parseRequest(in);
+            HttpRequestUtils.parseRequest(in);
+            Map<String, Object> requestMap = Context.reqMap.get();
 
             String reqPath = requestMap.get(HttpRequestUtils.PATH).toString();
             String reqMethod = requestMap.get(HttpRequestUtils.METHOD).toString();
@@ -43,14 +44,15 @@ public class RequestHandler extends Thread {
             if(requestMap.get(HttpRequestUtils.BODY) != null)
                 reqBody = requestMap.get(HttpRequestUtils.BODY).toString();
 
+
+            //파싱된 요청 정보 기반 처리 로직 수행 + 리소스 메핑 + 응답 반환
+            DataOutputStream dos = new DataOutputStream(out);
             String acceptStr = reqHeaderMap.get("Accept").toString();
             for(String type: acceptStr.split(",")){
                 if(type.equals("text/css")){
                     HttpResponseUtils.setCSSResponse(dos,HttpStatus.OK,reqPath);
                 }
             }
-            
-            //파싱된 요청 정보 기반 처리 로직 수행 + 리소스 메핑 + 응답 반환
             if(reqPath.equals("/index.html") ||reqPath.equals("/") ){
                 HttpResponseUtils.setViewResponse(dos,HttpStatus.OK,"/index.html");
                 return;

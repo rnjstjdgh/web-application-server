@@ -50,7 +50,8 @@ public class HttpRequestUtilsTest {
                 "Accept-Encoding: gzip, deflate\n" +
                 "Connection: Keep-Alive";
 
-        Map<String, Object> resultMap1 = HttpRequestUtils.parseRequest(new ByteArrayInputStream(reqMsgSample1.getBytes()));
+        HttpRequestUtils.parseRequest(new ByteArrayInputStream(reqMsgSample1.getBytes()));
+        Map<String, Object> resultMap1 = Context.reqMap.get();
         assertThat("/cgi-bin/process.cgi",is(resultMap1.get(HttpRequestUtils.PATH)));
         assertThat("POST",is(resultMap1.get(HttpRequestUtils.METHOD)));
         assertThat(null,is(resultMap1.get(HttpRequestUtils.QUERYSTRINGMAP)));
@@ -60,10 +61,12 @@ public class HttpRequestUtilsTest {
         assertThat("application/x-www-form-urlencoded",is(headerMap.get("Content-Type")));
         assertThat("licenseID=string&content=string&/paramsXML=string",is(resultMap1.get(HttpRequestUtils.BODY).toString()));
 
-        Map<String, Object> resultMap2 = HttpRequestUtils.parseRequest(new ByteArrayInputStream(reqMsgSample2.getBytes()));
+        HttpRequestUtils.parseRequest(new ByteArrayInputStream(reqMsgSample2.getBytes()));
+        Map<String, Object> resultMap2 = Context.reqMap.get();
         assertThat("dsssdsds\n" + "dsssdsdsfsdfsd",is(resultMap2.get(HttpRequestUtils.BODY).toString()));
 
-        Map<String, Object> resultMap3 = HttpRequestUtils.parseRequest(new ByteArrayInputStream(reqMsgSample3.getBytes()));
+        HttpRequestUtils.parseRequest(new ByteArrayInputStream(reqMsgSample3.getBytes()));
+        Map<String, Object> resultMap3 = Context.reqMap.get();
         assertThat(null,is(resultMap3.get(HttpRequestUtils.BODY)));
     }
 
