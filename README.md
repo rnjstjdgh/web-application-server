@@ -15,7 +15,8 @@
     3.  응답 정보 클래스를 분리하였다.
     4.  요청 path 별 분기문으로 처리하던 로직을 다형성을 활용해 통일했고 RequestMapping 클래스를 만들어서 요청 path에 대한 적절한 클래스를 찾을 수 있도록 했다.
           * 이로 인해, controller가 추가될 때 기존 코드 수정 없이 컨트롤러 하나 만들고 RequestMapping에 등록만 해 주면 됨!
-  
+          * ![image](https://user-images.githubusercontent.com/41561652/146323163-da354f25-4af4-452d-b7c3-a4f8b0bb707c.png)
+
 
 
 ### 2.  기억하고 싶은 문구
