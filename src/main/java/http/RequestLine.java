@@ -9,7 +9,7 @@ import util.HttpRequestUtils;
 class RequestLine {
     private static final Logger log = LoggerFactory.getLogger(RequestLine.class);
 
-    private String method = null;
+    private HttpMethod method = null;
 
     private String version = null;
 
@@ -18,7 +18,7 @@ class RequestLine {
     private Map<String, String> params = null;
 
     RequestLine(String startLine) {
-        method = HttpRequestUtils.getMethod(startLine);
+        method = HttpMethod.valueOf(HttpRequestUtils.getMethod(startLine));
         version = HttpRequestUtils.getHTTPVersion(startLine);
         String reqUrl = HttpRequestUtils.getReqUrl(startLine);
         int querySplitIdx = reqUrl.indexOf("?");
@@ -32,7 +32,7 @@ class RequestLine {
         }
     }
 
-    public String getMethod() {
+    public HttpMethod getMethod() {
         return method;
     }
 
