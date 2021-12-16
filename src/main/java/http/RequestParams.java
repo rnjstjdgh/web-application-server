@@ -17,22 +17,26 @@ class RequestParams {
 		putParams(queryString);
 	}
 
-	private void putParams(String data) {
-		log.debug("data : {}", data);
-		
-		if (data == null || data.isEmpty()) {
-			return;
-		}
-		
-		params.putAll(HttpRequestUtils.parseQueryString(data));
-		log.debug("params : {}", params);
-	}
-
 	void addBody(String body) {
 		putParams(body);	
 	}
 
+	private void putParams(String data) {
+		log.debug("data : {}", data);
+
+		if (data == null || data.isEmpty()) {
+			return;
+		}
+
+		params.putAll(HttpRequestUtils.parseQueryString(data));
+		log.debug("params : {}", params);
+	}
+
 	String getParameter(String name) {
 		return params.get(name);
+	}
+
+	void setParams(Map<String,String> params){
+		this.params = params;
 	}
 }

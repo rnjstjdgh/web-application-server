@@ -29,6 +29,8 @@ public class HttpResponse {
 
     public void forward(String url) {
         try {
+            if("/".equals(url))
+                url = "/index.html";
             byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
             if (url.endsWith(".css")) {
                 headers.put("Content-Type", "text/css");
@@ -53,6 +55,17 @@ public class HttpResponse {
         responseBody(contents);
     }
 
+    public void sendRedirect(String redirectUrl) {
+        try {
+            dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            processHeaders();
+            dos.writeBytes("Location: " + redirectUrl + " \r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
+
     private void response200Header(int lengthOfBodyContent) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
@@ -68,17 +81,6 @@ public class HttpResponse {
             dos.write(body, 0, body.length);
             dos.writeBytes("\r\n");
             dos.flush();
-        } catch (IOException e) {
-            log.error(e.getMessage());
-        }
-    }
-
-    public void sendRedirect(String redirectUrl) {
-        try {
-            dos.writeBytes("HTTP/1.1 302 Found \r\n");
-            processHeaders();
-            dos.writeBytes("Location: " + redirectUrl + " \r\n");
-            dos.writeBytes("\r\n");
         } catch (IOException e) {
             log.error(e.getMessage());
         }

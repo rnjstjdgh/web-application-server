@@ -70,4 +70,27 @@ public class HttpRequestUtilsTest {
         Pair pair = HttpRequestUtils.parseHeader(header);
         assertThat(pair, is(new Pair("Content-Length", "59")));
     }
+
+    @Test
+    public void getReqUrl(){
+        String startLine = "GET /index.html HTTP/1.1";
+        String reqUrl = HttpRequestUtils.getReqUrl(startLine);
+        assertThat(reqUrl, is("/index.html"));
+    }
+
+    @Test
+    public void getReqPath(){
+        String reqUrl = "/user/create?userId=fdsf&password=fsd&name=fsd&email=fds%40fds";
+        int idx = reqUrl.indexOf("?");
+        String reqPath = HttpRequestUtils.getReqPath(reqUrl,idx);
+        assertThat(reqPath,is("/user/create"));
+    }
+
+    @Test
+    public void getReqQueryString(){
+        String reqUrl = "/user/create?userId=fdsf&password=fsd&name=fsd&email=fds%40fds";
+        int idx = reqUrl.indexOf("?");
+        String queryString = HttpRequestUtils.getReqQueryString(reqUrl,idx);
+        assertThat(queryString,is("userId=fdsf&password=fsd&name=fsd&email=fds%40fds"));
+    }
 }
