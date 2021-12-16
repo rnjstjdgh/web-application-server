@@ -1,3 +1,10 @@
+# 개발 브랜치 정리
+### 1.  최초 막 개발한 환경
+* master 브랜치
+
+### 2.  1번을 리펙토링한 환경
+* was-step1.1-live-coding 브랜치
+
 # 실습을 위한 개발 환경 세팅
 * https://github.com/slipp/web-application-server 프로젝트를 자신의 계정으로 Fork한다. Github 우측 상단의 Fork 버튼을 클릭하면 자신의 계정으로 Fork된다.
 * Fork한 프로젝트를 eclipse 또는 터미널에서 clone 한다.
