@@ -49,6 +49,27 @@ public class HttpRequestUtils {
         return new Pair(tokens[0], tokens[1]);
     }
 
+    public static String getMethod(String startLine){
+        String[] token = startLine.split(" ");
+        return token[0];
+    }
+    public static String getReqPath(String reqUrl, int idx){
+        return reqUrl.substring(0,idx);
+    }
+    public static String getReqQueryString(String reqUrl, int idx){
+        return reqUrl.substring(idx + 1);
+    }
+
+    public static String getHTTPVersion(String startLine){
+        String[] token = startLine.split(" ");
+        return token[2];
+    }
+
+    public static String getReqUrl(String startLine){
+        String[] token = startLine.split(" ");
+        return token[1];
+    }
+
     public static Pair parseHeader(String header) {
         return getKeyValue(header, ": ");
     }
