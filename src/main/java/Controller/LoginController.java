@@ -1,6 +1,6 @@
 package Controller;
 
-import db.DataBase;
+import db.UserDataBase;
 import http.HttpRequest;
 import http.HttpResponse;
 import model.User;
@@ -18,7 +18,7 @@ public class LoginController extends AbstractController{
 
     @Override
     void doPost(HttpRequest request, HttpResponse response) {
-        User user = DataBase.findUserById(request.getParameter("userId"));
+        User user = UserDataBase.findUserById(request.getParameter("userId"));
         if (user != null) {
             if (user.login(request.getParameter("password"))) {
                 response.addHeader("Set-Cookie","logined=true");

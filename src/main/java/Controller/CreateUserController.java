@@ -1,6 +1,6 @@
 package Controller;
 
-import db.DataBase;
+import db.UserDataBase;
 import http.HttpRequest;
 import http.HttpResponse;
 import model.User;
@@ -22,7 +22,7 @@ public class CreateUserController extends AbstractController{
         User user = new User(request.getParameter("userId"), request.getParameter("password"), request.getParameter("name"),
                 request.getParameter("email"));
         log.debug("user : {}", user);
-        DataBase.addUser(user);
+        UserDataBase.addUser(user);
         response.sendRedirect("/index.html");
     }
 }

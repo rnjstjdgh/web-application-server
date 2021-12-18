@@ -1,6 +1,6 @@
 package Controller;
 
-import db.DataBase;
+import db.UserDataBase;
 import http.HttpRequest;
 import http.HttpResponse;
 import model.User;
@@ -22,7 +22,7 @@ public class ListUserController extends AbstractController{
             response.forward("/user/login.html");
             return;
         }
-        Collection<User> users = DataBase.findAll();
+        Collection<User> users = UserDataBase.findAll();
         StringBuilder sb = new StringBuilder();
         sb.append("<table border='1'>");
         for (User user : users) {
