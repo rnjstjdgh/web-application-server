@@ -1,8 +1,10 @@
 package Controller;
 
+import db.SessionDatabase;
 import db.UserDataBase;
 import http.HttpRequest;
 import http.HttpResponse;
+import http.HttpSession;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,7 @@ public class ListUserController extends AbstractController{
             response.forward("/user/login.html");
             return;
         }
+
         Collection<User> users = UserDataBase.findAll();
         StringBuilder sb = new StringBuilder();
         sb.append("<table border='1'>");
@@ -45,10 +48,10 @@ public class ListUserController extends AbstractController{
         if(cookieValue == null)
             return false;
         Map<String, String> cookies = HttpRequestUtils.parseCookies(cookieValue.trim());
-        String value = cookies.get("logined");
-        if (value == null) {
+        String sessionid = cookies.get("JSESSIONID");
+        HttpSession session = SessionDatabase.findSessionById(sessionid);
+        if(session == null)
             return false;
-        }
-        return Boolean.parseBoolean(value);
+        return true;
     }
 }
